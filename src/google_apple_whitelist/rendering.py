@@ -127,6 +127,9 @@ def render_artifacts(
     dataset: str = "combined_google_services_plus_apple",
     set_prefix: str = "gaw",
 ) -> RenderSummary:
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", dataset):
+        raise ValueError("dataset must be a simple file stem containing only letters, numbers, dots, underscores, and hyphens")
+
     dataset_ipv4 = _read_cidrs(input_dir / f"{dataset}_ipv4.txt")
     dataset_ipv6 = _read_cidrs(input_dir / f"{dataset}_ipv6.txt")
     if not dataset_ipv4 and not dataset_ipv6:

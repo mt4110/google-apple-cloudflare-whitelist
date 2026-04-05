@@ -1,5 +1,7 @@
 """Public IP range fetcher and network allowlist generator."""
 
+__version__ = "0.4.0"
+
 from .core import (
     CLOUDFLARE_IPS_V4_URL,
     CLOUDFLARE_IPS_V6_URL,
@@ -35,5 +37,3 @@ __all__ = [
     "load_networks_from_paths",
     "resolve_effective_client_ip",
 ]
-
-__version__ = "0.4.0"

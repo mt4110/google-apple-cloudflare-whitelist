@@ -48,3 +48,12 @@ class RenderingTests(unittest.TestCase):
         self.assertIn("flags interval;", snippet)
         self.assertIn("    };\n}", snippet)
         self.assertIn("type ipv6_addr;", snippet)
+
+    def test_render_artifacts_rejects_dataset_with_path_segments(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp) / "whitelist_output"
+            output_dir = Path(tmp) / "rendered_assets"
+            input_dir.mkdir(parents=True, exist_ok=True)
+
+            with self.assertRaises(ValueError):
+                render_artifacts(input_dir=input_dir, output_dir=output_dir, dataset="../escape")

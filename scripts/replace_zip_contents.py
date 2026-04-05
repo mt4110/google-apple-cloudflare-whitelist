@@ -57,7 +57,10 @@ def replace_zip_contents(
     output_path: pathlib.Path,
     root_dir_name: str | None = None,
 ) -> pathlib.Path:
-    chosen_root = root_dir_name or detect_root_dir_name(base_zip) or source_dir.resolve().name
+    detected_root = detect_root_dir_name(base_zip)
+    if root_dir_name is None and detected_root is None:
+        raise ValueError("Could not detect a single project root directory in base zip. Pass --root-dir-name explicitly.")
+    chosen_root = root_dir_name or detected_root
 
     with tempfile.TemporaryDirectory() as temp_dir_str:
         temp_dir = pathlib.Path(temp_dir_str)

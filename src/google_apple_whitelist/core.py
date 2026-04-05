@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from importlib import resources
 from typing import Any, Iterable, Mapping, Sequence
 
+from . import __version__
+
 GOOGLE_GOOG_JSON = "https://www.gstatic.com/ipranges/goog.json"
 GOOGLE_CLOUD_JSON = "https://www.gstatic.com/ipranges/cloud.json"
 CLOUDFLARE_IPS_V4_URL = "https://www.cloudflare.com/ips-v4"
@@ -45,8 +47,27 @@ class AppleRanges:
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any]) -> "AppleRanges":
-        ipv4 = tuple(payload.get("ipv4", []))
-        ipv6 = tuple(payload.get("ipv6", []))
+        ipv4_raw = payload.get("ipv4", ())
+        ipv6_raw = payload.get("ipv6", ())
+
+        if isinstance(ipv4_raw, str):
+            ipv4 = (ipv4_raw,)
+        elif isinstance(ipv4_raw, Sequence):
+            ipv4 = tuple(ipv4_raw)
+        else:
+            raise ValueError("Apple ranges file field 'ipv4' must be a string or a list of strings.")
+
+        if isinstance(ipv6_raw, str):
+            ipv6 = (ipv6_raw,)
+        elif isinstance(ipv6_raw, Sequence):
+            ipv6 = tuple(ipv6_raw)
+        else:
+            raise ValueError("Apple ranges file field 'ipv6' must be a string or a list of strings.")
+
+        if any(not isinstance(cidr, str) for cidr in ipv4):
+            raise ValueError("Apple ranges file field 'ipv4' must contain only strings.")
+        if any(not isinstance(cidr, str) for cidr in ipv6):
+            raise ValueError("Apple ranges file field 'ipv6' must contain only strings.")
         if not ipv4 and not ipv6:
             raise ValueError("Apple ranges file must contain at least one IPv4 or IPv6 range.")
 
@@ -94,7 +115,7 @@ def fetch_json(url: str, timeout: int = 30) -> dict[str, Any]:
     request = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "google-apple-whitelist/0.4.0",
+            "User-Agent": f"google-apple-whitelist/{__version__}",
             "Accept": "application/json",
         },
     )
@@ -114,7 +135,7 @@ def fetch_text(url: str, timeout: int = 30) -> str:
     request = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "google-apple-whitelist/0.4.0",
+            "User-Agent": f"google-apple-whitelist/{__version__}",
             "Accept": "text/plain, text/*;q=0.9, */*;q=0.1",
         },
     )

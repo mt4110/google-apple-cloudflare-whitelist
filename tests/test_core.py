@@ -91,6 +91,16 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(loaded.ipv4, ("17.0.0.0/8",))
             self.assertEqual(loaded.ipv6, ("2a01:b740::/32",))
 
+    def test_apple_ranges_from_mapping_accepts_single_string_values(self) -> None:
+        loaded = AppleRanges.from_mapping({"ipv4": "17.0.0.0/8"})
+
+        self.assertEqual(loaded.ipv4, ("17.0.0.0/8",))
+        self.assertEqual(loaded.ipv6, ())
+
+    def test_apple_ranges_from_mapping_rejects_non_string_iterables(self) -> None:
+        with self.assertRaises(ValueError):
+            AppleRanges.from_mapping({"ipv4": [17]})
+
     @mock.patch("google_apple_whitelist.core.fetch_text")
     @mock.patch("google_apple_whitelist.core.fetch_json")
     def test_run_fetch_writes_metadata_and_text_files(

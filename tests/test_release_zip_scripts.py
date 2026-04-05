@@ -58,3 +58,18 @@ class ReplaceZipContentsTests(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 replace_zip_contents(base_zip=base_zip, source_dir=source_dir, output_path=output_zip)
+
+    def test_replace_zip_contents_requires_explicit_root_for_rootless_archives(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base_zip = Path(tmp) / "base.zip"
+            source_dir = Path(tmp) / "working-tree"
+            output_zip = Path(tmp) / "output.zip"
+
+            source_dir.mkdir(parents=True, exist_ok=True)
+            (source_dir / "README.md").write_text("new", encoding="utf-8")
+
+            with zipfile.ZipFile(base_zip, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr("README.md", "old")
+
+            with self.assertRaises(ValueError):
+                replace_zip_contents(base_zip=base_zip, source_dir=source_dir, output_path=output_zip)
