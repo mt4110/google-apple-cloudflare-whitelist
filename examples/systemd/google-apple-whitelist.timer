@@ -1,0 +1,11 @@
+[Unit]
+Description=Run google-apple-whitelist once per day
+
+[Timer]
+OnCalendar=*-*-* 03:17:00
+Persistent=true
+RandomizedDelaySec=300
+Unit=google-apple-whitelist.service
+
+[Install]
+WantedBy=timers.target

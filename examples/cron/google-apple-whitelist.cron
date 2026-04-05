@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/home/youruser/.local/bin:/usr/local/bin:/usr/bin:/bin
+
+17 3 * * * cd /opt/google-apple-whitelist && MISE_BIN=/home/youruser/.local/bin/mise ./scripts/run_fetch.sh --output-dir /var/lib/google-apple-whitelist/current >> /var/log/google-apple-whitelist.log 2>&1
