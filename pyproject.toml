@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "google-apple-whitelist"
+version = "0.4.0"
+description = "Fetch public IP feeds for Google, Apple, and Cloudflare and generate network allowlist helper outputs."
+readme = { file = "README_EN.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+keywords = [
+  "google",
+  "apple",
+  "cloudflare",
+  "allowlist",
+  "whitelist",
+  "firewall",
+  "cidr",
+  "nginx",
+  "nftables",
+  "ipset"
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13"
+]
+dependencies = []
+
+[project.scripts]
+google-apple-whitelist = "google_apple_whitelist.cli:main"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+google_apple_whitelist = ["data/*.json"]

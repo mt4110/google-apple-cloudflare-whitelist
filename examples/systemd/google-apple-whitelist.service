@@ -1,0 +1,12 @@
+[Unit]
+Description=Refresh provider allowlist inputs (Google / Apple / Cloudflare)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=youruser
+Group=youruser
+WorkingDirectory=/opt/google-apple-whitelist
+Environment=MISE_BIN=/home/youruser/.local/bin/mise
+ExecStart=/opt/google-apple-whitelist/scripts/run_fetch.sh --output-dir /var/lib/google-apple-whitelist/current

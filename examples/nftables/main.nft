@@ -1,0 +1,25 @@
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet app_guard {
+    # Generate first:
+    #   python -m google_apple_whitelist fetch --output-dir ./whitelist_output
+    #   python -m google_apple_whitelist render --input-dir ./whitelist_output --output-dir ./rendered_assets
+    #
+    # Then copy the generated snippet into:
+    #   /etc/nftables/generated/combined_google_services_plus_apple.nft
+    #
+    include "/etc/nftables/generated/combined_google_services_plus_apple.nft"
+
+    chain input {
+        type filter hook input priority 0;
+        policy drop;
+
+        ct state established,related accept
+        iif "lo" accept
+
+        tcp dport { 22, 443 } ip saddr @gaw_allow_v4 accept
+        tcp dport { 22, 443 } ip6 saddr @gaw_allow_v6 accept
+    }
+}

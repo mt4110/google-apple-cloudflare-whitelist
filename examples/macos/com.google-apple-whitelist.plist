@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.google-apple-whitelist</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/youruser/src/google-apple-whitelist/scripts/run_fetch.sh</string>
+    <string>--output-dir</string>
+    <string>/Users/youruser/Library/Application Support/google-apple-whitelist/current</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>MISE_BIN</key>
+    <string>/opt/homebrew/bin/mise</string>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>3</integer>
+    <key>Minute</key>
+    <integer>17</integer>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/youruser/Library/Logs/google-apple-whitelist.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/youruser/Library/Logs/google-apple-whitelist.err.log</string>
+</dict>
+</plist>
