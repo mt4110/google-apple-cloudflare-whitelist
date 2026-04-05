@@ -139,5 +139,8 @@ def resolve_effective_client_ip(
     Cloudflare proxy ranges that you allow to reach your origin.
     """
     if forwarded_ip and is_ip_in_networks(remote_addr, trusted_proxy_networks):
-        return forwarded_ip
+        try:
+            return str(parse_ip(forwarded_ip.strip()))
+        except ValueError:
+            return remote_addr
     return remote_addr

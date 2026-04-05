@@ -105,18 +105,18 @@ def build_nftables_snippet(
     v6_elements = _render_elements(ipv6_cidrs)
     return (
         f"set {v4_set} {{\n"
-        f"    type ipv4_addr\n"
-        f"    flags interval\n"
+        f"    type ipv4_addr;\n"
+        f"    flags interval;\n"
         f"    elements = {{\n"
         f"{v4_elements}\n"
-        f"    }}\n"
+        f"    }};\n"
         f"}}\n\n"
         f"set {v6_set} {{\n"
-        f"    type ipv6_addr\n"
-        f"    flags interval\n"
+        f"    type ipv6_addr;\n"
+        f"    flags interval;\n"
         f"    elements = {{\n"
         f"{v6_elements}\n"
-        f"    }}\n"
+        f"    }};\n"
         f"}}\n"
     )
 

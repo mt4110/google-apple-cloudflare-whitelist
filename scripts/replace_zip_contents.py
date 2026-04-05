@@ -7,15 +7,48 @@ import shutil
 import tempfile
 import zipfile
 
-from build_release_zip import build_release_zip, DEFAULT_EXCLUDES
-
-
 def detect_root_dir_name(zip_path: pathlib.Path) -> str | None:
     with zipfile.ZipFile(zip_path) as archive:
-        top_level = {pathlib.PurePosixPath(name).parts[0] for name in archive.namelist() if name and not name.startswith("__MACOSX/")}
+        top_level = {
+            pathlib.PurePosixPath(name).parts[0]
+            for name in archive.namelist()
+            if name and not name.startswith("__MACOSX/") and len(pathlib.PurePosixPath(name).parts) > 1
+        }
     if len(top_level) == 1:
         return next(iter(top_level))
     return None
+
+
+def _extract_archive_safely(archive: zipfile.ZipFile, destination: pathlib.Path) -> None:
+    root = destination.resolve()
+    for member in archive.infolist():
+        member_name = member.filename.replace("\\", "/")
+        if not member_name:
+            continue
+
+        target_path = (destination / pathlib.PurePosixPath(member_name)).resolve()
+        try:
+            target_path.relative_to(root)
+        except ValueError as exc:
+            raise ValueError(f"Refusing to extract unsafe path from zip: {member.filename}") from exc
+
+        if member.is_dir():
+            target_path.mkdir(parents=True, exist_ok=True)
+            continue
+
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        with archive.open(member) as src, target_path.open("wb") as dst:
+            shutil.copyfileobj(src, dst)
+
+
+def _write_zip_from_directory(source_dir: pathlib.Path, output_path: pathlib.Path) -> pathlib.Path:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(output_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(source_dir.rglob("*")):
+            if path.is_dir():
+                continue
+            archive.write(path, path.relative_to(source_dir).as_posix())
+    return output_path
 
 
 def replace_zip_contents(
@@ -32,7 +65,7 @@ def replace_zip_contents(
         extract_dir.mkdir(parents=True, exist_ok=True)
 
         with zipfile.ZipFile(base_zip) as archive:
-            archive.extractall(extract_dir)
+            _extract_archive_safely(archive, extract_dir)
 
         target_root = extract_dir / chosen_root
         if target_root.exists():
@@ -61,12 +94,7 @@ def replace_zip_contents(
             ),
         )
 
-        return build_release_zip(
-            source_dir=target_root,
-            output_path=output_path,
-            root_dir_name=chosen_root,
-            exclude_patterns=DEFAULT_EXCLUDES,
-        )
+        return _write_zip_from_directory(extract_dir, output_path)
 
 
 def parse_args() -> argparse.Namespace:

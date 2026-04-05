@@ -93,3 +93,15 @@ class MatchingTests(unittest.TestCase):
             ),
             "198.51.100.20",
         )
+
+    def test_resolve_effective_client_ip_falls_back_when_forwarded_value_is_not_a_single_ip(self) -> None:
+        trusted_proxy_networks = (ipaddress.ip_network("173.245.48.0/20"),)
+
+        self.assertEqual(
+            resolve_effective_client_ip(
+                remote_addr="173.245.48.5",
+                forwarded_ip="17.10.20.30, 203.0.113.10",
+                trusted_proxy_networks=trusted_proxy_networks,
+            ),
+            "173.245.48.5",
+        )

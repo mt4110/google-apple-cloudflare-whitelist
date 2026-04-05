@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from google_apple_whitelist.rendering import render_artifacts
+from google_apple_whitelist.rendering import build_nftables_snippet, render_artifacts
 
 
 class RenderingTests(unittest.TestCase):
@@ -40,3 +40,11 @@ class RenderingTests(unittest.TestCase):
 
             with self.assertRaises(FileNotFoundError):
                 render_artifacts(input_dir=input_dir, output_dir=output_dir)
+
+    def test_build_nftables_snippet_emits_valid_statement_terminators(self) -> None:
+        snippet = build_nftables_snippet("gaw", ("8.8.8.0/24",), ("2001:4860::/32",))
+
+        self.assertIn("type ipv4_addr;", snippet)
+        self.assertIn("flags interval;", snippet)
+        self.assertIn("    };\n}", snippet)
+        self.assertIn("type ipv6_addr;", snippet)
